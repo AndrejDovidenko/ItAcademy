@@ -40,10 +40,9 @@ function quadraticEquation(a, b, c) {
       b
     )}x ${symbolC} ${Math.abs(c)} = 0 имеет один корень x = ${x1}`;
   }
-  //   console.log(Math.abs(b));
-  return console.log(result);
+  return result;
 }
 
-quadraticEquation(8, -8, 72);
-quadraticEquation(4, 3, 1);
-quadraticEquation(21, 45, 18);
+console.log(quadraticEquation(8, -8, 72));
+console.log(quadraticEquation(2, 4, 2));
+console.log(quadraticEquation(21, 45, 18));
