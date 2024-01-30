@@ -133,7 +133,7 @@ function getNumberPar() {
   const inputData = prompt("Введите любое число");
   const num = Number(inputData);
   let result = `${num} это`;
-  if (!num) {
+  if (!num && num != 0) {
     result = "Incorrect data entered";
     return console.log(result);
   } else {
@@ -151,7 +151,7 @@ function getNumberPar() {
 
     if (num > 0) {
       result += " положительное число.";
-    } else if (num === 0) {
+    } else if (num == 0) {
       result +=
         " уникальное число(не является ни положительным, ни отрицательным).";
     } else {
