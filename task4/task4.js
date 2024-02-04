@@ -45,29 +45,24 @@ function quadraticEquation(a, b, c) {
 
   if (d < 0) {
     result = `уравнение ${valueA}x^2 ${valueB} ${valueC} = 0 не имеет вещественных корней`;
-
-    return console.log(result);
   }
 
   if (d > 0) {
     x1 = (-b + Math.sqrt(d)) / (2 * a);
     x2 = (-b - Math.sqrt(d)) / (2 * a);
     result = `уравнение ${valueA}x^2 ${valueB} ${valueC} = 0 имеет корни x1 = ${x1} и x2 = ${x2}`;
-
-    return console.log(result);
   }
 
   if (d === 0) {
     x1 = -(b / (2 * a));
     result = `уравнение ${valueA}x^2 ${valueB} ${valueC} = 0 имеет один корень x = ${x1}`;
-
-    return console.log(result);
   }
+
+  return console.log(result.replace(/\s+/g, " "));
 }
 
 quadraticEquation(-1, -1, -1);
 quadraticEquation(1, -8, 72);
 quadraticEquation(1, 12, 36);
 quadraticEquation(4, -8, 1);
-// console.log(quadraticEquation(2, 4, 2));
-// console.log(quadraticEquation(21, 45, 18));
+quadraticEquation(1, 0, 0);
