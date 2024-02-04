@@ -11,4 +11,6 @@ function fizzbuzz() {
   }
   return result;
 }
+
 console.log(fizzbuzz());
+fizzbuzz();
