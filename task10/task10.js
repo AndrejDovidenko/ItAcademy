@@ -66,10 +66,9 @@ function createCalendar() {
 </div>`;
 
   const allDay = calendar.querySelectorAll(".day");
-
-  for (let i = 0; i < allDay.length; i++) {
+  for (let i = 0; i < allDay.length - 1; i++) {
     const el = document.createElement("p");
-    if (i < YourDate.getDay() - 1) {
+    if (i < YourDate.getDay() - 1 || !YourDate.getDay()) {
       allDay[i].appendChild(el);
     }
   }
