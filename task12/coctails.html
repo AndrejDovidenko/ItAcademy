@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./task12.css" />
+  </head>
+  <body>
+    <h1>task12</h1>
+    <button class="btn-recipe">Ввести рецепт</button>
+    <div class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <label
+          >Название коктейля:
+          <input type="text" class="cocktail-name" />
+        </label>
+
+        <div class="alcochol">
+          <label
+            >Алкогольный
+            <input type="radio" name="type" value="alcoholic" />
+          </label>
+          <label
+            >Безалкогольный
+            <input type="radio" name="type" value="nonAlcoholic" />
+          </label>
+        </div>
+
+        <div class="ingredient">
+          <label
+            >Ингредиент:
+            <input type="text" name="nameIngredient" />
+          </label>
+
+          <label
+            >Количество в мл:
+            <input type="text" name="quantity" />
+          </label>
+
+          <button class="btn-ing">Добавить ингредиент</button>
+        </div>
+        <label
+          >Рецепт:
+          <textarea name="recipe"></textarea>
+        </label>
+        <button class="btn-add">Добавить коктейль</button>
+      </div>
+    </div>
+  </body>
+  <script src="./task12.js"></script>
+</html>
