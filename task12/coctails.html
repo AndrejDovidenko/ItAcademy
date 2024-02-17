@@ -7,24 +7,34 @@
     <link rel="stylesheet" href="./task12.css" />
   </head>
   <body>
-    <h1>task12</h1>
-    <button class="btn-recipe">Ввести рецепт</button>
+    <h1>Cocktail Bar</h1>
+    <button class="btn-cocktail-add">Создать коктейль</button>
+    <button class="btn-cocktail-show">Показать коктейль</button>
+    <button class="btn-cocktail-remove">Удалить коктейль</button>
+    <button class="btn-cocktail-list">Показать список коктейлей</button>
+    <!-- <form action="#"> -->
     <div class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
         <label
           >Название коктейля:
-          <input type="text" class="cocktail-name" />
+          <input type="text" class="cocktail-name" required />
         </label>
 
-        <div class="alcochol">
+        <div class="alcohol">
           <label
             >Алкогольный
-            <input type="radio" name="type" value="alcoholic" />
+            <input
+              type="radio"
+              class="radio"
+              value="Алкогольный"
+              required
+              checked
+            />
           </label>
           <label
             >Безалкогольный
-            <input type="radio" name="type" value="nonAlcoholic" />
+            <input type="radio" class="radio" value="Безалкогольный" required />
           </label>
         </div>
 
@@ -35,19 +45,19 @@
           </label>
 
           <label
-            >Количество в мл:
-            <input type="text" name="quantity" />
+            >Количество:
+            <input type="number" name="quantity" min="0" max="1000" step="10" />
           </label>
-
-          <button class="btn-ing">Добавить ингредиент</button>
+          <button class="unit">мл</button>
+          <button class="btn-ing" disabled>Добавить ингредиент</button>
         </div>
-        <label
-          >Рецепт:
-          <textarea name="recipe"></textarea>
-        </label>
+        <p class="recipe-p">Рецепт:</p>
+        <textarea name="recipe" rows="5" required></textarea>
         <button class="btn-add">Добавить коктейль</button>
       </div>
     </div>
+    <div class="text-output"></div>
+    <!-- </form> -->
   </body>
   <script src="./task12.js"></script>
 </html>

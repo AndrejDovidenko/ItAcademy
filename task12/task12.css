@@ -1,3 +1,7 @@
+html {
+  font-size: 20px;
+}
+
 .modal {
   display: none;
   position: fixed;
@@ -11,23 +15,41 @@
 }
 
 .modal-content {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background-color: #fefefe;
+  background-color: rgba(221, 229, 202, 1);
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
+  width: 65%;
+  border-radius: 2rem;
 }
 
 .close {
-  width: 20px;
-  height: 30px;
+  position: absolute;
+  width: 3rem;
+  height: 3rem;
   color: #aaa;
-  float: right;
-  font-size: 28px;
+  right: 1rem;
+  font-size: 3rem;
   font-weight: bold;
+}
+
+.alcohol {
+  display: flex;
+  gap: 2rem;
+}
+
+.radio {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.ingredient {
+  display: flex;
+  gap: 1rem;
 }
 
 .close:hover,
@@ -35,4 +57,40 @@
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+.recipe-p {
+  margin-bottom: 0;
+}
+
+.btn-add {
+  margin: auto;
+}
+
+p,
+label {
+  font-size: 1.1rem;
+}
+
+input {
+  border-radius: 0.5rem;
+  height: 1.5rem;
+}
+
+button {
+  font-size: 1rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: rgba(23, 142, 179, 0.7);
+  padding: 0 0.5rem 0 0.5rem;
+  width: fit-content;
+}
+
+textarea {
+  border-radius: 0.5rem;
+}
+
+:disabled {
+  background-color: rgba(23, 142, 179, 0.4);
 }
