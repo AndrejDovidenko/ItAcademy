@@ -31,7 +31,7 @@ function getYourDate() {
     return false;
   }
 
-  const data = inputData.split(",");
+  const data = inputData.replaceAll(" ", "").split(",");
 
   if (
     +data[0] &&
@@ -72,11 +72,12 @@ function createCalendar() {
 
   const allDay = calendar.querySelectorAll(".day");
   const FirstDay = new Date(YourDate.getFullYear(), YourDate.getMonth(), 1);
-  const dayNum = FirstDay.getDay() - 1;
-
+  //   const dayNum = FirstDay.getDay() - 2;
+  //   const prev = new Date(YourDate.getFullYear(), YourDate.getMonth(), -dayNum);
   for (let i = 0; i < allDay.length - 1; i++) {
     const el = document.createElement("p");
     if (i < FirstDay.getDay() - 1 || !FirstDay.getDay()) {
+      //   el.innerText = prev.getDate() + i;
       allDay[i].appendChild(el);
     }
   }
