@@ -32,7 +32,7 @@ function getYourDate() {
     return 1;
   }
 
-  const data = inputData.split(",");
+  const data = inputData.replaceAll(" ", "").split(",");
 
   if (
     +data[0] &&
