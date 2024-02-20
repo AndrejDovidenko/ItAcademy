@@ -1,25 +1,29 @@
 function getCounter(num = 0) {
-  this.num = num;
+  function Obj() {
+    this.num = num;
 
-  this.log = function () {
-    console.log(`${this.num}`);
-    return this;
-  };
+    this.log = function () {
+      console.log(`${this.num}`);
+      return this;
+    };
 
-  this.count = function (term = 0) {
-    this.term = term;
-    this.num += this.term;
-    return this;
-  };
+    this.count = function (term = 0) {
+      this.term = term;
+      this.num += this.term;
+      return this;
+    };
 
-  this.reset = function () {
-    this.num = 0;
+    this.reset = function () {
+      this.num = 0;
+      return this;
+    };
     return this;
-  };
-  return this;
+  }
+  return new Obj();
 }
 
 const counter = getCounter(5);
+
 counter
   .log() // 5
   .count(4)
