@@ -13,7 +13,7 @@ const allMonths = [
   "Декабрь",
 ];
 
-let YourDate = new Date();
+let yourDate = new Date();
 
 const body = document.querySelector("body");
 const button = document.createElement("button");
@@ -43,7 +43,7 @@ function getYourDate() {
     data[1] < 13 &&
     data[2].length === 4
   ) {
-    YourDate = new Date(data[2], data[1] - 1, data[0]);
+    yourDate = new Date(data[2], data[1] - 1, data[0]);
   } else {
     alert("Введены некоректные данные");
     return false;
@@ -56,56 +56,57 @@ function createCalendar() {
   calendar.innerHTML = `<div class ="title">
   <button class = "btn btn-prev-year">&lt&lt</button>
   <button class = "btn btn-prev-month">&lt</button>
-  <h1>${allMonths[YourDate.getMonth()]} ${YourDate.getFullYear()} года</h1>
+  <h1>${allMonths[yourDate.getMonth()]} ${yourDate.getFullYear()} года</h1>
   <button class = "btn btn-next-month">&gt</button>
   <button class = "btn btn-next-year">&gt&gt</button>
   </div>
   <div class="days">
-    <div class="day">пн</div>
-    <div class="day">вт</div>
-    <div class="day">ср</div>
-    <div class="day">чт</div>
-    <div class="day">пт</div>
-    <div class="day">сб</div>
-    <div class="day">вс</div>
+    <div class="day"><p class ="day-name">пн</p></div>
+    <div class="day"><p class ="day-name">вт</p></div>
+    <div class="day"><p class ="day-name">ср</p></div>
+    <div class="day"><p class ="day-name">чт</p></div>
+    <div class="day"><p class ="day-name">пт</p></div>
+    <div class="day weekend"><p class ="day-name">сб</p></div>
+    <div class="day weekend"><p class ="day-name">вс</p></div>
   </div>`;
 
   const allDay = calendar.querySelectorAll(".day");
-  const FirstDay = new Date(YourDate.getFullYear(), YourDate.getMonth(), 1);
-  //   const dayNum = FirstDay.getDay() - 2;
-  //   const prev = new Date(YourDate.getFullYear(), YourDate.getMonth(), -dayNum);
-  for (let i = 0; i < allDay.length - 1; i++) {
+  const firstDay = new Date(yourDate.getFullYear(), yourDate.getMonth(), 1);
+  const lastDay = new Date(yourDate.getFullYear(), yourDate.getMonth() + 1, 0);
+  const dayOfWeekFirstDay = !firstDay.getDay() ? 7 : firstDay.getDay();
+  const dayOfWeekLastDay = !lastDay.getDay() ? 7 : lastDay.getDay();
+
+  firstDay.setDate(firstDay.getDate() - (dayOfWeekFirstDay - 1));
+
+  const dateRange =
+    lastDay.getDate() + (dayOfWeekFirstDay - 1) + 7 - dayOfWeekLastDay;
+
+  for (let i = 0; i < dateRange; i++) {
     const el = document.createElement("p");
-    if (i < FirstDay.getDay() - 1 || !FirstDay.getDay()) {
-      //   el.innerText = prev.getDate() + i;
-      allDay[i].appendChild(el);
+    el.innerHTML = firstDay.getDate();
+    el.classList.add("num");
+
+    if (
+      yourDate.getDate() === firstDay.getDate() &&
+      yourDate.getMonth() === firstDay.getMonth()
+    ) {
+      el.classList.add("this-day");
     }
-  }
 
-  const lastDate = new Date(
-    YourDate.getFullYear(),
-    YourDate.getMonth() + 1,
-    0
-  ).getDate();
-
-  for (let i = 0; i < lastDate; i++) {
-    const el = document.createElement("p");
-
-    if (YourDate.getDate() === i + 1) {
-      el.style.backgroundColor = "red";
+    if (yourDate.getMonth() !== firstDay.getMonth()) {
+      el.classList.add("another-month");
     }
-    el.innerHTML = i + 1;
 
-    if (!FirstDay.getDay()) {
+    if (!firstDay.getDay()) {
       allDay[6].appendChild(el);
     } else {
-      allDay[FirstDay.getDay() - 1].appendChild(el);
+      allDay[firstDay.getDay() - 1].appendChild(el);
     }
 
-    FirstDay.setDate(FirstDay.getDate() + 1);
+    firstDay.setDate(firstDay.getDate() + 1);
   }
 
-  body.appendChild(calendar);
+  body.prepend(calendar);
 }
 
 createCalendar();
@@ -116,48 +117,48 @@ body.addEventListener("click", (e) => {
   const btnNextMonth = e.target.closest(".btn-next-month");
   const btnNextYear = e.target.closest(".btn-next-year");
   const nextMonthLastDay = new Date(
-    YourDate.getFullYear(),
-    YourDate.getMonth() + 2,
+    yourDate.getFullYear(),
+    yourDate.getMonth() + 2,
     0
   ).getDate();
   const prevMonthLastDay = new Date(
-    YourDate.getFullYear(),
-    YourDate.getMonth(),
+    yourDate.getFullYear(),
+    yourDate.getMonth(),
     0
   ).getDate();
   const nextYearLastDay = new Date(
-    YourDate.getFullYear() + 1,
-    YourDate.getMonth() + 1,
+    yourDate.getFullYear() + 1,
+    yourDate.getMonth() + 1,
     0
   ).getDate();
   const prevYearLastDay = new Date(
-    YourDate.getFullYear() - 1,
-    YourDate.getMonth() + 1,
+    yourDate.getFullYear() - 1,
+    yourDate.getMonth() + 1,
     0
   ).getDate();
 
   if (btnPrevMonth) {
-    prevMonthLastDay < YourDate.getDate() ? YourDate.setDate(1) : false;
+    prevMonthLastDay < yourDate.getDate() ? yourDate.setDate(1) : false;
 
-    YourDate.setMonth(YourDate.getMonth() - 1);
+    yourDate.setMonth(yourDate.getMonth() - 1);
     createCalendar();
   }
   if (btnPrevYear) {
-    prevYearLastDay < YourDate.getDate() ? YourDate.setDate(1) : false;
+    prevYearLastDay < yourDate.getDate() ? yourDate.setDate(1) : false;
 
-    YourDate.setFullYear(YourDate.getFullYear() - 1);
+    yourDate.setFullYear(yourDate.getFullYear() - 1);
     createCalendar();
   }
   if (btnNextMonth) {
-    nextMonthLastDay < YourDate.getDate() ? YourDate.setDate(1) : false;
+    nextMonthLastDay < yourDate.getDate() ? yourDate.setDate(1) : false;
 
-    YourDate.setMonth(YourDate.getMonth() + 1);
+    yourDate.setMonth(yourDate.getMonth() + 1);
     createCalendar();
   }
   if (btnNextYear) {
-    nextYearLastDay < YourDate.getDate() ? YourDate.setDate(1) : false;
+    nextYearLastDay < yourDate.getDate() ? yourDate.setDate(1) : false;
 
-    YourDate.setFullYear(YourDate.getFullYear() + 1);
+    yourDate.setFullYear(yourDate.getFullYear() + 1);
     createCalendar();
   }
 });
