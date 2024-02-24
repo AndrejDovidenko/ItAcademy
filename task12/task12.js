@@ -193,6 +193,7 @@ body.addEventListener("click", (e) => {
   const btnCocktailShow = e.target.closest(".btn-cocktail-show");
   const btnCocktailRemove = e.target.closest(".btn-cocktail-remove");
   const btnCocktailList = e.target.closest(".btn-cocktail-list");
+  console.log(btnCocktailAdd);
 
   if (btnCocktailAdd) {
     modal.style.display = "block";

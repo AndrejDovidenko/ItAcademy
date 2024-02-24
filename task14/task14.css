@@ -1,0 +1,31 @@
+* {
+}
+
+html {
+  font-size: 24px;
+}
+
+li {
+  width: max-content;
+}
+
+/* .default {
+  outline: none;
+  border: solid 2px rgb(63, 105, 243);
+  border-radius: 5px;
+} */
+
+:focus {
+  outline: none;
+  border: solid 2px rgb(63, 105, 243);
+  border-radius: 5px;
+}
+
+input {
+  border-radius: 5px;
+}
+
+.invalid {
+  outline: none;
+  border: solid 2px red;
+}
