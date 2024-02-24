@@ -9,12 +9,6 @@ li {
   width: max-content;
 }
 
-/* .default {
-  outline: none;
-  border: solid 2px rgb(63, 105, 243);
-  border-radius: 5px;
-} */
-
 :focus {
   outline: none;
   border: solid 2px rgb(63, 105, 243);
@@ -28,4 +22,5 @@ input {
 .invalid {
   outline: none;
   border: solid 2px red;
+  border-radius: 5px;
 }
