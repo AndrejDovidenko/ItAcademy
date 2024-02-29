@@ -1,0 +1,163 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5rem;
+}
+
+.clock-face {
+  position: relative;
+  width: 30rem;
+  height: 30rem;
+  border-radius: 50%;
+  background-color: #cfefda;
+}
+
+.arrow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.arrow > div {
+  width: 100%;
+  height: 55%;
+  border-radius: 5px;
+  border-style: solid;
+  border-color: transparent transparent #000000 transparent;
+}
+
+.hours-arrow {
+  --deg-hour-arrow: 0;
+  transform: rotate(var(--deg-hour-arrow));
+  width: 7px;
+  height: 60%;
+}
+
+.hours-arrow > div {
+  border-width: 0px 4.5px 170px 4.5px;
+}
+
+.minute-arrow > div {
+  border-width: 0 3.5px 194px 3.5px;
+}
+
+.second-arrow > div {
+  border-width: 0 3.5px 218px 3.5px;
+}
+
+.minute-arrow {
+  --deg-minute-arrow: 0;
+  transform: rotate(var(--deg-minute-arrow));
+  width: 5px;
+  height: 70%;
+}
+
+.second-arrow {
+  --deg-second-arrow: 0;
+  transform: rotate(var(--deg-second-arrow));
+  width: 3px;
+  height: 80%;
+}
+
+.wrapper {
+  position: absolute;
+  width: 2rem;
+  top: 5%;
+  bottom: 5%;
+  left: 5%;
+  right: 5%;
+  margin: auto;
+}
+
+.number-of-hours {
+  font-size: 1.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: white;
+  text-align: center;
+  padding-top: 7%;
+}
+
+.wrapper:nth-child(1) {
+  transform: rotate(30deg);
+}
+.wrapper:nth-child(2) {
+  transform: rotate(60deg);
+}
+.wrapper:nth-child(3) {
+  transform: rotate(90deg);
+}
+.wrapper:nth-child(4) {
+  transform: rotate(120deg);
+}
+.wrapper:nth-child(5) {
+  transform: rotate(150deg);
+}
+.wrapper:nth-child(6) {
+  transform: rotate(180deg);
+}
+.wrapper:nth-child(7) {
+  transform: rotate(210deg);
+}
+.wrapper:nth-child(8) {
+  transform: rotate(240deg);
+}
+.wrapper:nth-child(9) {
+  transform: rotate(270deg);
+}
+.wrapper:nth-child(10) {
+  transform: rotate(300deg);
+}
+.wrapper:nth-child(11) {
+  transform: rotate(330deg);
+}
+.wrapper:nth-child(12) {
+  transform: rotate(360deg);
+}
+
+.wrapper:nth-child(1) > .number-of-hours {
+  transform: rotate(-30deg);
+}
+
+.wrapper:nth-child(2) > .number-of-hours {
+  transform: rotate(-60deg);
+}
+
+.wrapper:nth-child(3) > .number-of-hours {
+  transform: rotate(-90deg);
+}
+.wrapper:nth-child(4) > .number-of-hours {
+  transform: rotate(-120deg);
+}
+.wrapper:nth-child(5) > .number-of-hours {
+  transform: rotate(-150deg);
+}
+.wrapper:nth-child(6) > .number-of-hours {
+  transform: rotate(-180deg);
+}
+.wrapper:nth-child(7) > .number-of-hours {
+  transform: rotate(-210deg);
+}
+.wrapper:nth-child(8) > .number-of-hours {
+  transform: rotate(-240deg);
+}
+.wrapper:nth-child(9) > .number-of-hours {
+  transform: rotate(-270deg);
+}
+.wrapper:nth-child(10) > .number-of-hours {
+  transform: rotate(-300deg);
+}
+.wrapper:nth-child(11) > .number-of-hours {
+  transform: rotate(-330deg);
+}
