@@ -1,0 +1,23 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5rem;
+}
+
+.hour-arrow {
+  --deg-hour-arrow: 0;
+  transform: rotate(var(--deg-hour-arrow));
+  transform-origin: 50% 50%;
+}
+
+.minute-arrow {
+  --deg-minute-arrow: 0;
+  transform: rotate(var(--deg-minute-arrow));
+  transform-origin: 50% 50%;
+}
+.second-arrow {
+  --deg-second-arrow: 0;
+  transform: rotate(var(--deg-second-arrow));
+  transform-origin: 50% 50%;
+}

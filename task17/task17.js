@@ -8,6 +8,10 @@ minuteArrow.className = "minute-arrow arrow";
 secondArrow.className = "second-arrow arrow";
 clockFace.classList.add("clock-face");
 
+const stepArrowInDeg = 6; //(360/60 = 6)
+const stepHourArrowInDeg = 30; //(360/12 = 30)
+const stepIntermediateInDeg = 0.5; //(30/60 = 0.5 - промежуточный шаг часовой стрелки, происходит каждую минуту)
+
 body.append(clockFace);
 
 function addNumberOfHours() {
@@ -32,29 +36,40 @@ function addArrows() {
   }
 }
 
-addNumberOfHours();
-addArrows();
-
 function setCurrentValue() {
-  const time = new Date();
-
-  const degreeSecondArrow = time.getSeconds() * 6;
-  const degreeMinuteArrow = time.getMinutes() * 6;
-  const degreeHoursArrow = time.getHours() * 30 + (degreeMinuteArrow / 6) * 0.5;
+  // поворачиваю секундную стрелку: 1) получаю текущую секунду и умножаю это значение на шаг стрелки в градусах;
+  // 2)присваиваю полученое значение СSS переменной для изменения значения свойства transform: rotate(--deg).
 
   secondArrow.style.setProperty(
     "--deg-second-arrow",
-    `${degreeSecondArrow}deg`
+    `${new Date().getSeconds() * stepArrowInDeg}deg`
   );
+
+  // поворачиваю минутную стрелку
+
   minuteArrow.style.setProperty(
     "--deg-minute-arrow",
-    `${degreeMinuteArrow}deg`
+    `${new Date().getMinutes() * stepArrowInDeg}deg`
   );
-  hoursArrow.style.setProperty("--deg-hour-arrow", `${degreeHoursArrow}deg`);
+
+  // поворачиваю часовую стрелку: 1) получаю текущий час и умножаю это значение на шаг часовой стрелки в градусах;
+  // 2) к полученому значению прибавляю промежуточное заначение(текущая минута * на промежуточный шаг);
+  // 3) присваиваю полученое значение СSS переменной для изменения значения свойства transform: rotate(--deg).
+
+  hoursArrow.style.setProperty(
+    "--deg-hour-arrow",
+    `${
+      new Date().getHours() * stepHourArrowInDeg +
+      new Date().getMinutes() * stepIntermediateInDeg
+    }deg`
+  );
 }
 
 function startClock() {
   setInterval(setCurrentValue, 1000);
 }
 
+addNumberOfHours();
+addArrows();
+setCurrentValue();
 startClock();
