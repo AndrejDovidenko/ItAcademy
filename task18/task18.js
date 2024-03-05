@@ -6,6 +6,9 @@ const clockFace = document.createElementNS(svgNS, "circle");
 const hoursArrow = document.createElementNS(svgNS, "polygon");
 const minuteArrow = document.createElementNS(svgNS, "polygon");
 const secondArrow = document.createElementNS(svgNS, "polygon");
+const digitalTime = document.createElementNS(svgNS, "text");
+const digitalPath = document.createElementNS(svgNS, "path");
+const digitalTextPath = document.createElementNS(svgNS, "textPath");
 svg.setAttributeNS(null, "width", "500");
 svg.setAttributeNS(null, "height", "500");
 const w = parseFloat(svg.getAttributeNS(null, "width"));
@@ -70,6 +73,27 @@ function drawClock() {
     angle += 30;
   }
 
+  //проводим линию внутри clockFace для последующего размещения на ней цифрового времени
+  digitalPath.setAttributeNS(
+    null,
+    "d",
+    `M${x0 - clockFaceRadius} ${y0 - clockFaceRadius * 0.3} L${
+      x0 + clockFaceRadius
+    } ${y0 - clockFaceRadius * 0.3}`
+  );
+  digitalPath.setAttributeNS(null, "id", "digital");
+
+  //Выравниваем цифровое время внутри clockFace
+  digitalTextPath.innerHTML = "00:00:00";
+  digitalTextPath.setAttributeNS(null, "href", "#digital");
+  digitalTextPath.setAttributeNS(null, "startOffset", "50%");
+  digitalTextPath.setAttributeNS(null, "text-anchor", "middle");
+  digitalTime.style.fontSize = `${clockFaceRadius * 0.2}`;
+
+  digitalTime.append(digitalTextPath);
+  svg.append(digitalPath, digitalTime);
+
+  //Рисуем и добавляем сирелки
   secondArrow.setAttributeNS(
     null,
     "points",
@@ -105,10 +129,11 @@ function drawClock() {
   );
   hoursArrow.setAttributeNS(null, "stroke", "black");
   hoursArrow.setAttributeNS(null, "class", "hour-arrow");
-  svg.append(hoursArrow, secondArrow, minuteArrow);
+  svg.append(hoursArrow, secondArrow, minuteArrow, digitalPath);
 }
 
 function setCurrentValue() {
+  digitalTextPath.innerHTML = new Date().toLocaleTimeString();
   // поворачиваю секундную стрелку: 1) получаю текущую секунду и умножаю это значение на шаг стрелки в градусах;
   // 2)присваиваю полученое значение СSS переменной для изменения значения свойства transform: rotate(--deg).
 

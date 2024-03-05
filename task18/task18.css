@@ -9,15 +9,18 @@ body {
   --deg-hour-arrow: 0;
   transform: rotate(var(--deg-hour-arrow));
   transform-origin: 50% 50%;
+  opacity: 0.6;
 }
 
 .minute-arrow {
   --deg-minute-arrow: 0;
   transform: rotate(var(--deg-minute-arrow));
   transform-origin: 50% 50%;
+  opacity: 0.6;
 }
 .second-arrow {
   --deg-second-arrow: 0;
   transform: rotate(var(--deg-second-arrow));
   transform-origin: 50% 50%;
+  opacity: 0.6;
 }
