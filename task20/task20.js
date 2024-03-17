@@ -1,152 +1,313 @@
 const body = document.querySelector("body");
+const countdown = document.createElement("div");
 const score = document.createElement("h1");
 const startButton = document.createElement("button");
 const playingField = document.createElement("div");
-const leftRacket = document.createElement("div");
-const rightRacket = document.createElement("div");
-const widthPlayingField = innerWidth / 2;
+const leftPaddle = document.createElement("div");
+const rightPaddle = document.createElement("div");
+const ball = document.createElement("div");
+const notice = document.createElement("p");
+
+const widthPlayingField = innerWidth / 1.5;
 const heightPlayingField = widthPlayingField / 2;
 
-score.classList.add("score");
-startButton.classList.add("start-button");
-playingField.classList.add("playing-field");
-leftRacket.classList.add("left-racket", "racket");
-rightRacket.classList.add("right-racket", "racket");
-score.innerHTML = "0:0";
-startButton.innerHTML = "start";
-playingField.style.width = widthPlayingField + "px";
-playingField.style.height = heightPlayingField + "px";
+const paddleHeight = heightPlayingField * 0.3; // высота ракетки
+const paddleWidth = widthPlayingField * 0.02; // ширина ракетки
+const startPosYPaddle = (heightPlayingField - paddleHeight) / 2; // начальная позиция по y
+const deltaYPaddle = heightPlayingField - paddleHeight; // ограничение движения по y
 
-playingField.append(leftRacket, rightRacket);
-body.append(score, startButton, playingField);
+const ballSize = heightPlayingField * 0.1; // размер мячика
+const startPosYBall = heightPlayingField / 2 - ballSize / 2; // начальная позиция по y
+const startPosXBall = widthPlayingField / 2 - ballSize / 2; // начальная позиция по x
+const deltaYBall = heightPlayingField - ballSize; // ограничение движения по y
+const deltaXBall = widthPlayingField - ballSize; // ограничение движения по x
 
-class RacketHash {
-  constructor() {
-    this.posY = 0;
-    this.speedY = 1;
-    this.width = widthPlayingField * 0.05;
-    this.height = heightPlayingField * 0.4;
+class Hash {
+  constructor(item, height, width, posY, deltaY, posX = 0, speedY = 2) {
+    this.item = item;
+    this.height = height;
+    this.width = width;
+    this.posY = posY;
+    this.posX = posX;
+    this.deltaY = deltaY;
+    this.speedY = speedY;
+  }
+
+  update() {
+    this.item.style.transform = `translateX(${this.posX + "px"}) translateY(${
+      this.posY + "px"
+    }) translateZ(0)`;
+  }
+}
+
+class PaddleHash extends Hash {
+  constructor(name, item, height, width, posY, deltaY) {
+    super(item, height, width, posY, deltaY);
+    this.isMoving = false;
+    this.rafId = null;
+    this.score = 0;
+    this.name = name;
+  }
+
+  updateScore() {
+    this.score += 1;
+  }
+
+  movePaddle(direction) {
+    if (direction === 1) {
+      this.posY -= this.speedY;
+      if (this.posY <= 0) {
+        this.posY = 0;
+        this.update();
+        return;
+      }
+    }
+
+    if (direction === -1) {
+      this.posY += this.speedY;
+      if (this.posY >= this.deltaY) {
+        this.posY = this.deltaY;
+        this.update();
+        return;
+      }
+    }
+
+    this.update();
+
+    if (this.isMoving) {
+      this.rafId = requestAnimationFrame(() => this.movePaddle(direction));
+    }
+  }
+
+  startMove(direction) {
+    this.isMoving = true;
+    this.movePaddle(direction);
+  }
+
+  stopMove() {
     this.isMoving = false;
   }
+}
 
-  update(item) {
-    item.style = `transform: translateY(${this.posY + "px"});`;
+class BallHash extends Hash {
+  constructor(item, height, width, posY, deltaY, posX, speedY) {
+    super(item, height, width, posY, deltaY, posX, speedY);
+    this.posX = startPosXBall;
+    this.deltaX = deltaXBall;
+  }
+
+  randomSpeed() {
+    this.speedX = [-7, 7].sort(() => Math.random() - 0.5)[0];
+    this.speedY = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5].sort(
+      () => Math.random() - 0.5
+    )[0];
   }
 }
 
-const leftRacketHash = new RacketHash();
-const rightRacketHash = new RacketHash();
-// console.log(leftRacketHash.posY);
+const leftPaddleHash = new PaddleHash(
+  "Left side",
+  leftPaddle,
+  paddleHeight,
+  paddleWidth,
+  startPosYPaddle,
+  deltaYPaddle
+);
+leftPaddleHash.update();
 
-const playingFieldHash = {
-  width: widthPlayingField,
-  height: heightPlayingField,
-};
+const rightPaddleHash = new PaddleHash(
+  "Right side",
+  rightPaddle,
+  paddleHeight,
+  paddleWidth,
+  startPosYPaddle,
+  deltaYPaddle
+);
+rightPaddleHash.update();
 
-function moveRacket(direction, hash, item) {
-  if (direction === 1) {
-    if (-hash.posY * 2 + hash.height > playingFieldHash.height) {
-      return;
-    }
-    hash.posY -= hash.speedY;
-  }
-  if (direction === -1) {
-    if (hash.posY * 2 + hash.height > playingFieldHash.height) {
-      return;
-    }
-    hash.posY += hash.speedY;
-  }
+const ballHash = new BallHash(
+  ball,
+  ballSize,
+  ballSize,
+  startPosYBall,
+  deltaYBall
+);
+ballHash.update();
 
-  hash.update(item);
+function renderDom() {
+  countdown.classList.add("countdown");
+  notice.classList.add("notice");
+  score.classList.add("score");
+  startButton.classList.add("start-button");
+  playingField.classList.add("playing-field");
+  leftPaddle.classList.add("left-racket", "racket");
+  rightPaddle.classList.add("right-racket", "racket");
+  ball.classList.add("ball");
+  countdown.innerHTML = "3";
+  score.innerHTML = `${leftPaddleHash.score} : ${rightPaddleHash.score}`;
+  startButton.innerHTML = "start";
+  playingField.style.width = widthPlayingField + "px";
+  playingField.style.height = heightPlayingField + "px";
 
-  if (hash.isMoving) {
-    requestAnimationFrame(() => moveRacket(direction, hash, item));
+  playingField.append(leftPaddle, ball, rightPaddle);
+  body.append(countdown, notice, score, startButton, playingField);
+}
+
+renderDom();
+
+// подготовка к старту следующего раунда
+function roundIsOver(item) {
+  rightPaddleHash.stopMove();
+  document.removeEventListener("keydown", keydownHandler);
+  startButton.addEventListener("click", startButtonClickHandler);
+  countdown.classList.remove("start");
+  item.updateScore();
+  score.innerHTML = `${rightPaddleHash.score} : ${leftPaddleHash.score}`;
+  if (item.score === 5) {
+    notice.innerHTML = item.name + " lost!";
+    notice.classList.add("show");
   }
 }
 
-document.addEventListener("keydown", (event) => {
-  console.log(event.code);
+function moveBall() {
+  ballHash.posX += ballHash.speedX;
 
+  // Проверяем совпадение позиций правой ракетки и мячика, если есть совпадение отбиваем, иначе мячик долетает до края поля и останавливается
+  if (
+    ballHash.posY + ballHash.height >= rightPaddleHash.posY &&
+    ballHash.posY <= rightPaddleHash.posY + rightPaddleHash.height &&
+    ballHash.posX >= ballHash.deltaX - rightPaddleHash.width
+  ) {
+    ballHash.speedX = -ballHash.speedX;
+    ballHash.posX = ballHash.deltaX - rightPaddleHash.width;
+  } else if (ballHash.posX >= ballHash.deltaX) {
+    ballHash.posX = ballHash.deltaX;
+    ballHash.update();
+    // подготовка к старту следующего раунда
+    roundIsOver(rightPaddleHash);
+    return;
+  }
+  // Проверяем совпадение позиций левой ракетки и мячика, если есть совпадение отбиваем, иначе мячик долетает до края поля и останавливается
+  if (
+    ballHash.posY + ballHash.height >= leftPaddleHash.posY &&
+    ballHash.posY <= leftPaddleHash.posY + leftPaddleHash.height &&
+    ballHash.posX <= leftPaddleHash.width
+  ) {
+    ballHash.speedX = -ballHash.speedX;
+    ballHash.posX = leftPaddleHash.width;
+  } else if (ballHash.posX <= 0) {
+    ballHash.posX = 0;
+    ballHash.update();
+    // подготовка к старту следующего раунда
+    roundIsOver(leftPaddleHash);
+    return;
+  }
+
+  ballHash.posY += ballHash.speedY;
+  // вылетел ли мяч ниже пола?
+  if (ballHash.posY >= ballHash.deltaY) {
+    ballHash.speedY = -ballHash.speedY;
+    ballHash.posY = ballHash.deltaY;
+  }
+  // вылетел ли мяч выше потолка?
+  if (ballHash.posY <= 0) {
+    ballHash.speedY = -ballHash.speedY;
+    ballHash.posY = 0;
+  }
+
+  ballHash.update();
+  requestAnimationFrame(moveBall);
+}
+
+function startBall() {
+  ballHash.randomSpeed();
+  requestAnimationFrame(moveBall);
+}
+
+function timer() {
+  countdown.style.display = "inline-block";
+  const t = setInterval(() => {
+    count--;
+
+    if (count <= 0) {
+      countdown.innerText = "Go!";
+      countdown.style.opacity = "0";
+      clearInterval(t);
+    } else {
+      countdown.innerText = String(count);
+    }
+  }, 1000);
+}
+
+function startButtonClickHandler() {
+  // проверяем есть ли победитель, если да сбрасываем счет
+  if (leftPaddleHash.score === 5 || rightPaddleHash.score === 5) {
+    leftPaddleHash.score = 0;
+    rightPaddleHash.score = 0;
+    score.innerHTML = `${rightPaddleHash.score} : ${leftPaddleHash.score}`;
+    notice.classList.remove("show");
+  }
+
+  // подготовка к запуску мячика
+  document.addEventListener("keydown", keydownHandler);
+  leftPaddleHash.posY = startPosYPaddle;
+  leftPaddleHash.update();
+  rightPaddleHash.posY = startPosYPaddle;
+  rightPaddleHash.update();
+  ballHash.posX = startPosXBall;
+  ballHash.posY = startPosYBall;
+  ballHash.update();
+  countdown.innerText = "3";
+  countdown.style.display = "none";
+  countdown.style.opacity = "1";
+  countdown.classList.add("start");
+  count = 3;
+  timer();
+
+  setTimeout(() => startBall(), 4000);
+  // удаляем слушатель для избежания повторного вызова. Вешаем снова в функции roundIsOver
+  startButton.removeEventListener("click", startButtonClickHandler);
+}
+
+function keydownHandler(event) {
   switch (event.code) {
     case "ShiftLeft":
-      leftRacketHash.isMoving = true;
-      moveRacket(1, leftRacketHash, leftRacket);
+      if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
+      requestAnimationFrame(() => leftPaddleHash.startMove(1));
       break;
     case "ControlLeft":
-      leftRacketHash.isMoving = true;
-      moveRacket(-1, leftRacketHash, leftRacket);
+      if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
+      requestAnimationFrame(() => leftPaddleHash.startMove(-1));
       break;
     case "ArrowUp":
-      rightRacketHash.isMoving = true;
-      moveRacket(1, rightRacketHash, rightRacket);
+      if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
+      requestAnimationFrame(() => rightPaddleHash.startMove(1));
       break;
     case "ArrowDown":
-      rightRacketHash.isMoving = true;
-      moveRacket(-1, rightRacketHash, rightRacket);
+      if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
+      requestAnimationFrame(() => rightPaddleHash.startMove(-1));
       break;
   }
-});
+}
 
+document.addEventListener("keydown", keydownHandler);
+startButton.addEventListener("click", startButtonClickHandler);
 document.addEventListener("keyup", (event) => {
   switch (event.code) {
     case "ShiftLeft":
-      leftRacketHash.isMoving = false;
+      leftPaddleHash.stopMove();
+      if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
       break;
     case "ControlLeft":
-      leftRacketHash.isMoving = false;
+      leftPaddleHash.stopMove();
+      if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
       break;
     case "ArrowUp":
-      rightRacketHash.isMoving = false;
-
+      rightPaddleHash.stopMove();
+      if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
       break;
     case "ArrowDown":
-      rightRacketHash.isMoving = false;
+      rightPaddleHash.stopMove();
+      if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
       break;
   }
 });
-
-// var ballH = {
-//   posX: 0,
-//   posY: 0,
-//   speedX: 1,
-//   width: 100,
-//   height: 100,
-
-//   update: function () {
-//     var ballElem = document.getElementById("IBall");
-//     ballElem.style.left = this.posX + "px";
-//     ballElem.style.top = this.posY + "px";
-//   },
-// };
-
-// var areaH = {
-//   width: 400,
-//   height: 300,
-// };
-
-// function start() {
-//   // синхрон с внутренней анимацией браузера
-//   // обычно 60 раз в сек
-//   requestAnimationFrame(tick);
-// }
-
-// function tick() {
-//   ballH.posX += ballH.speedX;
-
-//   // вылетел ли мяч правее стены?
-//   if (ballH.posX + ballH.width > areaH.width) {
-//     ballH.speedX = -ballH.speedX;
-//     ballH.posX = areaH.width - ballH.width;
-//   }
-//   // вылетел ли мяч левее стены?
-//   if (ballH.posX < 0) {
-//     ballH.speedX = -ballH.speedX;
-//     ballH.posX = 0;
-//   }
-
-//   ballH.update();
-
-//   requestAnimationFrame(tick);
-// }
-
-// ballH.update();
