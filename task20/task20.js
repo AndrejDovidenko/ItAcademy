@@ -22,6 +22,9 @@ const startPosXBall = widthPlayingField / 2 - ballSize / 2; // начальна�
 const deltaYBall = heightPlayingField - ballSize; // ограничение движения по y
 const deltaXBall = widthPlayingField - ballSize; // ограничение движения по x
 
+let countRaf = 0;
+let countStop = 0;
+
 class Hash {
   constructor(item, height, width, posY, deltaY, posX = 0, speedY = 2) {
     this.item = item;
@@ -54,6 +57,7 @@ class PaddleHash extends Hash {
   }
 
   movePaddle(direction) {
+    // console.log(countRaf);
     if (direction === 1) {
       this.posY -= this.speedY;
       if (this.posY <= 0) {
@@ -75,7 +79,9 @@ class PaddleHash extends Hash {
     this.update();
 
     if (this.isMoving) {
+      if (this.rafId) cancelAnimationFrame(this.rafId);
       this.rafId = requestAnimationFrame(() => this.movePaddle(direction));
+      countRaf += 1;
     }
   }
 
@@ -154,18 +160,70 @@ function renderDom() {
 
 renderDom();
 
-// подготовка к старту следующего раунда
+function timer() {
+  countdown.style.display = "inline-block";
+  const t = setInterval(() => {
+    count--;
+
+    if (count <= 0) {
+      countdown.innerText = "Go!";
+      countdown.style.opacity = "0";
+      clearInterval(t);
+    } else {
+      countdown.innerText = String(count);
+    }
+  }, 1000);
+}
+
+function startNewRound() {
+  // подготовка к старту нового раунда, обновляем позиции ракеток и мячика, обновляем обратный отсчет, вешаем событие "keydown" на ракетки
+  if (leftPaddleHash.score < 5 && rightPaddleHash.score < 5) {
+    // document.addEventListener("keydown", keydownHandler);
+    leftPaddleHash.posY = startPosYPaddle;
+    leftPaddleHash.update();
+    rightPaddleHash.posY = startPosYPaddle;
+    rightPaddleHash.update();
+    ballHash.posX = startPosXBall;
+    ballHash.posY = startPosYBall;
+    ballHash.update();
+    countdown.innerText = "3";
+    countdown.style.display = "none";
+    countdown.style.opacity = "1";
+    countdown.classList.add("start");
+    count = 3;
+    // старт раунда
+    timer();
+    setTimeout(() => startBall(), 4000);
+  }
+}
+
 function roundIsOver(item) {
-  rightPaddleHash.stopMove();
-  document.removeEventListener("keydown", keydownHandler);
-  startButton.addEventListener("click", startButtonClickHandler);
+  // конец раунда, останавливаем ракетки, меняем счет, удаляем клаасс у обратного отсчета, выводим на экран победителя игры если есть
+  item.stopMove();
+  if (item.rafId) cancelAnimationFrame(item.rafId);
+  // document.removeEventListener("keydown", keydownHandler);
+
   countdown.classList.remove("start");
   item.updateScore();
   score.innerHTML = `${rightPaddleHash.score} : ${leftPaddleHash.score}`;
+
   if (item.score === 5) {
     notice.innerHTML = item.name + " lost!";
     notice.classList.add("show");
+    startButton.disabled = false;
   }
+  // запускаем новый раунд
+  setTimeout(() => startNewRound(item), 2000);
+}
+
+function startNewGame() {
+  if (leftPaddleHash.score === 5 || rightPaddleHash.score === 5) {
+    leftPaddleHash.score = 0;
+    rightPaddleHash.score = 0;
+    score.innerHTML = `${rightPaddleHash.score} : ${leftPaddleHash.score}`;
+    notice.classList.remove("show");
+  }
+  startNewRound();
 }
 
 function moveBall() {
@@ -182,7 +240,7 @@ function moveBall() {
   } else if (ballHash.posX >= ballHash.deltaX) {
     ballHash.posX = ballHash.deltaX;
     ballHash.update();
-    // подготовка к старту следующего раунда
+    // конец раунда
     roundIsOver(rightPaddleHash);
     return;
   }
@@ -197,7 +255,7 @@ function moveBall() {
   } else if (ballHash.posX <= 0) {
     ballHash.posX = 0;
     ballHash.update();
-    // подготовка к старту следующего раунда
+    // конец раунда
     roundIsOver(leftPaddleHash);
     return;
   }
@@ -223,91 +281,60 @@ function startBall() {
   requestAnimationFrame(moveBall);
 }
 
-function timer() {
-  countdown.style.display = "inline-block";
-  const t = setInterval(() => {
-    count--;
-
-    if (count <= 0) {
-      countdown.innerText = "Go!";
-      countdown.style.opacity = "0";
-      clearInterval(t);
-    } else {
-      countdown.innerText = String(count);
-    }
-  }, 1000);
-}
-
-function startButtonClickHandler() {
-  // проверяем есть ли победитель, если да сбрасываем счет
-  if (leftPaddleHash.score === 5 || rightPaddleHash.score === 5) {
-    leftPaddleHash.score = 0;
-    rightPaddleHash.score = 0;
-    score.innerHTML = `${rightPaddleHash.score} : ${leftPaddleHash.score}`;
-    notice.classList.remove("show");
-  }
-
-  // подготовка к запуску мячика
-  document.addEventListener("keydown", keydownHandler);
-  leftPaddleHash.posY = startPosYPaddle;
-  leftPaddleHash.update();
-  rightPaddleHash.posY = startPosYPaddle;
-  rightPaddleHash.update();
-  ballHash.posX = startPosXBall;
-  ballHash.posY = startPosYBall;
-  ballHash.update();
-  countdown.innerText = "3";
-  countdown.style.display = "none";
-  countdown.style.opacity = "1";
-  countdown.classList.add("start");
-  count = 3;
-  timer();
-
-  setTimeout(() => startBall(), 4000);
-  // удаляем слушатель для избежания повторного вызова. Вешаем снова в функции roundIsOver
-  startButton.removeEventListener("click", startButtonClickHandler);
-}
-
 function keydownHandler(event) {
   switch (event.code) {
     case "ShiftLeft":
       if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
+      countStop += 1;
+      console.log(countRaf, countStop);
       requestAnimationFrame(() => leftPaddleHash.startMove(1));
       break;
     case "ControlLeft":
       if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
+      countStop += 1;
       requestAnimationFrame(() => leftPaddleHash.startMove(-1));
       break;
     case "ArrowUp":
       if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
+      countStop += 1;
       requestAnimationFrame(() => rightPaddleHash.startMove(1));
       break;
     case "ArrowDown":
       if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
+      countStop += 1;
       requestAnimationFrame(() => rightPaddleHash.startMove(-1));
       break;
   }
 }
 
+startButton.addEventListener("click", () => {
+  startNewGame();
+  startButton.disabled = true;
+});
+
 document.addEventListener("keydown", keydownHandler);
-startButton.addEventListener("click", startButtonClickHandler);
 document.addEventListener("keyup", (event) => {
   switch (event.code) {
     case "ShiftLeft":
       leftPaddleHash.stopMove();
       if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
+      countStop += 1;
+      console.log(countRaf, countStop);
       break;
     case "ControlLeft":
       leftPaddleHash.stopMove();
       if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
+      countStop += 1;
       break;
     case "ArrowUp":
       rightPaddleHash.stopMove();
       if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
+      countStop += 1;
       break;
     case "ArrowDown":
       rightPaddleHash.stopMove();
       if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
+      countStop += 1;
       break;
   }
 });

@@ -53,14 +53,6 @@ body {
   transform: translateZ(0);
 }
 
-/* .left-racket {
-  left: 0;
-}
-
-.right-racket {
-  right: 0;
-} */
-
 @keyframes pulse {
   0% {
     transform: scale(1);
