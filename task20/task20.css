@@ -27,6 +27,12 @@ body {
   border-radius: 10px;
   border: none;
   cursor: pointer;
+  transition: 1s;
+}
+
+:disabled {
+  background-color: #e2e2e2;
+  color: rgb(119, 116, 116);
 }
 
 .playing-field {

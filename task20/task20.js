@@ -21,9 +21,8 @@ const startPosYBall = heightPlayingField / 2 - ballSize / 2; // начальна
 const startPosXBall = widthPlayingField / 2 - ballSize / 2; // начальная позиция по x
 const deltaYBall = heightPlayingField - ballSize; // ограничение движения по y
 const deltaXBall = widthPlayingField - ballSize; // ограничение движения по x
-
-let countRaf = 0;
-let countStop = 0;
+const arrSpeedX = [-7, 7];
+const arrSpeedY = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5];
 
 class Hash {
   constructor(item, height, width, posY, deltaY, posX = 0, speedY = 2) {
@@ -50,48 +49,32 @@ class PaddleHash extends Hash {
     this.rafId = null;
     this.score = 0;
     this.name = name;
+    this.moveUp = false;
+    this.moveDown = false;
   }
 
   updateScore() {
     this.score += 1;
   }
 
-  movePaddle(direction) {
-    // console.log(countRaf);
-    if (direction === 1) {
+  movePaddle() {
+    if (this.moveUp && this.isMoving) {
       this.posY -= this.speedY;
       if (this.posY <= 0) {
         this.posY = 0;
-        this.update();
-        return;
       }
     }
 
-    if (direction === -1) {
+    if (this.moveDown && this.isMoving) {
       this.posY += this.speedY;
       if (this.posY >= this.deltaY) {
         this.posY = this.deltaY;
-        this.update();
-        return;
       }
     }
 
     this.update();
 
-    if (this.isMoving) {
-      if (this.rafId) cancelAnimationFrame(this.rafId);
-      this.rafId = requestAnimationFrame(() => this.movePaddle(direction));
-      countRaf += 1;
-    }
-  }
-
-  startMove(direction) {
-    this.isMoving = true;
-    this.movePaddle(direction);
-  }
-
-  stopMove() {
-    this.isMoving = false;
+    this.rafId = requestAnimationFrame(() => this.movePaddle());
   }
 }
 
@@ -103,10 +86,8 @@ class BallHash extends Hash {
   }
 
   randomSpeed() {
-    this.speedX = [-7, 7].sort(() => Math.random() - 0.5)[0];
-    this.speedY = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5].sort(
-      () => Math.random() - 0.5
-    )[0];
+    this.speedX = arrSpeedX.sort(() => Math.random() - 0.5)[0];
+    this.speedY = arrSpeedY.sort(() => Math.random() - 0.5)[0];
   }
 }
 
@@ -176,7 +157,7 @@ function timer() {
 }
 
 function startNewRound() {
-  // подготовка к старту нового раунда, обновляем позиции ракеток и мячика, обновляем обратный отсчет, вешаем событие "keydown" на ракетки
+  // подготовка к старту нового раунда, обновляем позиции ракеток и мячика, обновляем обратный отсчет
   if (leftPaddleHash.score < 5 && rightPaddleHash.score < 5) {
     // document.addEventListener("keydown", keydownHandler);
     leftPaddleHash.posY = startPosYPaddle;
@@ -192,16 +173,31 @@ function startNewRound() {
     countdown.classList.add("start");
     count = 3;
     // старт раунда
+    leftPaddleHash.isMoving = true;
+    rightPaddleHash.isMoving = true;
+    requestAnimationFrame(() => leftPaddleHash.movePaddle());
+    requestAnimationFrame(() => rightPaddleHash.movePaddle());
     timer();
     setTimeout(() => startBall(), 4000);
   }
 }
 
+function startNewGame() {
+  if (leftPaddleHash.score === 5 || rightPaddleHash.score === 5) {
+    leftPaddleHash.score = 0;
+    rightPaddleHash.score = 0;
+    score.innerHTML = `${rightPaddleHash.score} : ${leftPaddleHash.score}`;
+    notice.classList.remove("show");
+  }
+  startNewRound();
+}
+
 function roundIsOver(item) {
   // конец раунда, останавливаем ракетки, меняем счет, удаляем клаасс у обратного отсчета, выводим на экран победителя игры если есть
-  item.stopMove();
-  if (item.rafId) cancelAnimationFrame(item.rafId);
-  // document.removeEventListener("keydown", keydownHandler);
+  leftPaddleHash.isMoving = false;
+  rightPaddleHash.isMoving = false;
+  if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
+  if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
 
   countdown.classList.remove("start");
   item.updateScore();
@@ -214,16 +210,6 @@ function roundIsOver(item) {
   }
   // запускаем новый раунд
   setTimeout(() => startNewRound(item), 2000);
-}
-
-function startNewGame() {
-  if (leftPaddleHash.score === 5 || rightPaddleHash.score === 5) {
-    leftPaddleHash.score = 0;
-    rightPaddleHash.score = 0;
-    score.innerHTML = `${rightPaddleHash.score} : ${leftPaddleHash.score}`;
-    notice.classList.remove("show");
-  }
-  startNewRound();
 }
 
 function moveBall() {
@@ -284,57 +270,41 @@ function startBall() {
 function keydownHandler(event) {
   switch (event.code) {
     case "ShiftLeft":
-      if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
-      countStop += 1;
-      console.log(countRaf, countStop);
-      requestAnimationFrame(() => leftPaddleHash.startMove(1));
+      leftPaddleHash.moveUp = true;
       break;
     case "ControlLeft":
-      if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
-      countStop += 1;
-      requestAnimationFrame(() => leftPaddleHash.startMove(-1));
+      leftPaddleHash.moveDown = true;
       break;
     case "ArrowUp":
-      if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
-      countStop += 1;
-      requestAnimationFrame(() => rightPaddleHash.startMove(1));
+      rightPaddleHash.moveUp = true;
       break;
     case "ArrowDown":
-      if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
-      countStop += 1;
-      requestAnimationFrame(() => rightPaddleHash.startMove(-1));
+      rightPaddleHash.moveDown = true;
       break;
   }
 }
 
 startButton.addEventListener("click", () => {
-  startNewGame();
+  leftPaddleHash.isMoving = true;
+  rightPaddleHash.isMoving = true;
   startButton.disabled = true;
+  startNewGame();
 });
 
 document.addEventListener("keydown", keydownHandler);
 document.addEventListener("keyup", (event) => {
   switch (event.code) {
     case "ShiftLeft":
-      leftPaddleHash.stopMove();
-      if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
-      countStop += 1;
-      console.log(countRaf, countStop);
+      leftPaddleHash.moveUp = false;
       break;
     case "ControlLeft":
-      leftPaddleHash.stopMove();
-      if (leftPaddleHash.rafId) cancelAnimationFrame(leftPaddleHash.rafId);
-      countStop += 1;
+      leftPaddleHash.moveDown = false;
       break;
     case "ArrowUp":
-      rightPaddleHash.stopMove();
-      if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
-      countStop += 1;
+      rightPaddleHash.moveUp = false;
       break;
     case "ArrowDown":
-      rightPaddleHash.stopMove();
-      if (rightPaddleHash.rafId) cancelAnimationFrame(rightPaddleHash.rafId);
-      countStop += 1;
+      rightPaddleHash.moveDown = false;
       break;
   }
 });
