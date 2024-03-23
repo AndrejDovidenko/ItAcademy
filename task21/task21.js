@@ -25,6 +25,7 @@ const deltaYBall = h - ballSize; // ограничение движения по
 const deltaXBall = w - ballSize; // ограничение движения по x
 const arrSpeedX = [-7, 7];
 const arrSpeedY = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5];
+let countTimer = 3;
 
 class Hash {
   constructor(item, height, width, posY, deltaY, posX = 0, speedY = 2) {
@@ -176,14 +177,14 @@ drawPinPong();
 function timer() {
   countdown.style.display = "inline-block";
   const t = setInterval(() => {
-    count--;
+    countTimer--;
 
-    if (count <= 0) {
+    if (countTimer <= 0) {
       countdown.innerText = "Go!";
       countdown.style.opacity = "0";
       clearInterval(t);
     } else {
-      countdown.innerText = String(count);
+      countdown.innerText = String(countTimer);
     }
   }, 1000);
 }
@@ -203,7 +204,7 @@ function startNewRound() {
     countdown.style.display = "none";
     countdown.style.opacity = "1";
     countdown.classList.add("start");
-    count = 3;
+    countTimer = 3;
     // старт раунда
     leftPaddleHash.isMoving = true;
     rightPaddleHash.isMoving = true;
