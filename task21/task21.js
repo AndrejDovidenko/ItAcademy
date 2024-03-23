@@ -1,26 +1,28 @@
+const svgNS = "http://www.w3.org/2000/svg";
+
 const body = document.querySelector("body");
-const countdown = document.createElement("div");
 const score = document.createElement("h1");
 const startButton = document.createElement("button");
-const playingField = document.createElement("div");
-const leftPaddle = document.createElement("div");
-const rightPaddle = document.createElement("div");
-const ball = document.createElement("div");
+const countdown = document.createElement("div");
 const notice = document.createElement("p");
+const svg = document.createElementNS(svgNS, "svg");
+const playingField = document.createElementNS(svgNS, "rect");
+const leftPaddle = document.createElementNS(svgNS, "rect");
+const rightPaddle = document.createElementNS(svgNS, "rect");
+const ball = document.createElementNS(svgNS, "circle");
 
-const widthPlayingField = innerWidth / 1.5;
-const heightPlayingField = widthPlayingField / 2;
+const w = innerWidth / 1.5;
+const h = w / 2;
+const paddleHeight = h * 0.3; // высота ракетки
+const paddleWidth = w * 0.02; // ширина ракетки
+const startPosYPaddle = (h - paddleHeight) / 2; // начальная позиция по y
+const deltaYPaddle = h - paddleHeight; // ограничение движения по y
 
-const paddleHeight = heightPlayingField * 0.3; // высота ракетки
-const paddleWidth = widthPlayingField * 0.02; // ширина ракетки
-const startPosYPaddle = (heightPlayingField - paddleHeight) / 2; // начальная позиция по y
-const deltaYPaddle = heightPlayingField - paddleHeight; // ограничение движения по y
-
-const ballSize = heightPlayingField * 0.1; // размер мячика
-const startPosYBall = heightPlayingField / 2 - ballSize / 2; // начальная позиция по y
-const startPosXBall = widthPlayingField / 2 - ballSize / 2; // начальная позиция по x
-const deltaYBall = heightPlayingField - ballSize; // ограничение движения по y
-const deltaXBall = widthPlayingField - ballSize; // ограничение движения по x
+const ballSize = h * 0.1; // размер мячика
+const startPosYBall = h / 2 - ballSize / 2; // начальная позиция по y
+const startPosXBall = w / 2 - ballSize / 2; // начальная позиция по x
+const deltaYBall = h - ballSize; // ограничение движения по y
+const deltaXBall = w - ballSize; // ограничение движения по x
 const arrSpeedX = [-7, 7];
 const arrSpeedY = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5];
 
@@ -125,21 +127,51 @@ function renderDom() {
   notice.classList.add("notice");
   score.classList.add("score");
   startButton.classList.add("start-button");
-  playingField.classList.add("playing-field");
-  leftPaddle.classList.add("left-racket", "racket");
-  rightPaddle.classList.add("right-racket", "racket");
-  ball.classList.add("ball");
   countdown.innerHTML = "3";
   score.innerHTML = `${leftPaddleHash.score} : ${rightPaddleHash.score}`;
   startButton.innerHTML = "start";
-  playingField.style.width = widthPlayingField + "px";
-  playingField.style.height = heightPlayingField + "px";
 
-  playingField.append(leftPaddle, ball, rightPaddle);
-  body.append(countdown, notice, score, startButton, playingField);
+  body.append(score, startButton, countdown, notice);
 }
 
 renderDom();
+
+function drawPinPong() {
+  svg.setAttributeNS(null, "width", w);
+  svg.setAttributeNS(null, "height", h);
+
+  body.append(svg);
+
+  playingField.setAttributeNS(null, "x", 0);
+  playingField.setAttributeNS(null, "y", 0);
+  playingField.setAttributeNS(null, "rx", 10);
+  playingField.setAttributeNS(null, "width", w);
+  playingField.setAttributeNS(null, "height", h);
+  playingField.setAttributeNS(null, "fill", "#d9e1f2");
+
+  leftPaddle.setAttributeNS(null, "x", 0);
+  leftPaddle.setAttributeNS(null, "y", 0);
+  leftPaddle.setAttributeNS(null, "rx", 10);
+  leftPaddle.setAttributeNS(null, "width", w * 0.02);
+  leftPaddle.setAttributeNS(null, "height", h * 0.3);
+  leftPaddle.setAttributeNS(null, "fill", "#8bbdc7");
+
+  rightPaddle.setAttributeNS(null, "x", w - w * 0.02);
+  rightPaddle.setAttributeNS(null, "y", 0);
+  rightPaddle.setAttributeNS(null, "rx", 10);
+  rightPaddle.setAttributeNS(null, "width", w * 0.02);
+  rightPaddle.setAttributeNS(null, "height", h * 0.3);
+  rightPaddle.setAttributeNS(null, "fill", "#8bbdc7");
+
+  ball.setAttributeNS(null, "cx", ballSize / 2);
+  ball.setAttributeNS(null, "cy", ballSize / 2);
+  ball.setAttributeNS(null, "r", ballSize / 2);
+  ball.setAttributeNS(null, "fill", "#535151;");
+
+  svg.append(playingField, leftPaddle, rightPaddle, ball);
+}
+
+drawPinPong();
 
 function timer() {
   countdown.style.display = "inline-block";
