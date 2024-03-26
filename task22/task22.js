@@ -270,18 +270,19 @@ function roundIsOver(item) {
   // конец раунда, останавливаем ракетки, меняем счет, удаляем клаасс у обратного отсчета, выводим на экран победителя игры если есть
   leftPaddleHash.isMoving = false;
   rightPaddleHash.isMoving = false;
+  item.updateScore();
 
   countdown.classList.remove("start");
-  item.updateScore();
   score.innerHTML = `${rightPaddleHash.score} : ${leftPaddleHash.score}`;
 
   if (item.score === 5) {
     notice.innerHTML = item.name + " lost!";
     notice.classList.add("show");
     startButton.disabled = false;
+  } else {
+    // запускаем новый раунд
+    setTimeout(() => startNewRound(), 2000);
   }
-  // запускаем новый раунд
-  setTimeout(() => startNewRound(), 2000);
 }
 
 function keydownHandler(event) {

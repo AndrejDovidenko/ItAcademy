@@ -26,9 +26,9 @@
     </style>
   </head>
   <body>
-    <h1>Пример решения задачи "в лоб"</h1>
+    <h1>Пример использования MVC</h1>
 
-    <h3>пример умножения двух чисел</h3>
+    <h3>Всего-навсего вычисление двух чисел</h3>
     <form>
       <fieldset>
         <legend>Магия чисел</legend>
@@ -39,7 +39,12 @@
             name="input_1"
             id="input_1"
           />
-          <span class="mult-sign"> x </span>
+          <select class="multi-sign">
+            <option>x</option>
+            <option>/</option>
+            <option>+</option>
+            <option>-</option>
+          </select>
           <input
             type="number"
             placeholder="Введите второе значение"
@@ -55,37 +60,95 @@
     </form>
 
     <script>
-      const input1 = document.querySelector("#input_1");
-      const input2 = document.querySelector("#input_2");
-      const button = document.querySelector("#calculate-btn");
-      const result = document.querySelector("#show-result");
+      const model = {
+        firstValue: null,
+        secondValue: null,
+        sign: null,
+        result: null,
+        disabled: true,
 
-      document.addEventListener("input", () => {
-        // console.log(input1.value);
-        if (input1.value > 0 && input2.value > 0) {
-          button.disabled = false;
-        } else {
-          button.disabled = true;
-        }
-      });
+        viewUpdate: function (flag) {
+          view.update(this.result, this.disabled, flag);
+        },
 
-      button.disabled = true;
+        setDisabled: function (boolean) {
+          this.disabled = boolean;
+        },
 
-      button.addEventListener("click", (e) => {
-        e.preventDefault();
-        // if (input1.value.length > 0 && input2.value.length) {
-        //   button.disabled =
-        const res = input1.value * input2.value;
-        result.innerHTML = "результат вычисления = " + res;
-        // }
-      });
+        setValues: function (firstValueState, secondValueState, signState) {
+          this.firstValue = +firstValueState;
+          this.secondValue = +secondValueState;
+          this.sign = signState;
+        },
 
-      /* Здесь пишем скрипт, который позволит решить поставленную задачу:
-              1) Кнопка "вычислить" должна быть не активна, пока не введены оба числа
-              2) Если введены оба числа (т.е. инпуты не пустые), то делаем кнопку активной
-              3) по клику на эту кнопку - произвести вычисление и вывод результата в div с id="show-result" в формате:
-              "Результат вычислений = " + результат
-          */
+        calculate: function () {
+          switch (this.sign) {
+            case "x":
+              this.result = this.firstValue * this.secondValue;
+              break;
+            case "/":
+              if (!this.secondValue) {
+                this.result = "Деление но ноль невозможно!";
+              } else {
+                this.result = this.firstValue / this.secondValue;
+              }
+              break;
+            case "+":
+              this.result = this.firstValue + this.secondValue;
+              break;
+            case "-":
+              this.result = this.firstValue - this.secondValue;
+              break;
+          }
+          this.viewUpdate(1);
+        },
+      };
+
+      const view = {
+        showResult: document.querySelector("#show-result"),
+        button: document.querySelector("#calculate-btn"),
+
+        update: function (value, boolean, flag) {
+          this.button.disabled = boolean;
+          if (!flag) {
+            this.showResult.textContent = "";
+          } else {
+            this.showResult.textContent = "Результат вычисления = " + value;
+          }
+        },
+      };
+
+      const controller = {
+        addListeners: function () {
+          const form = document.querySelector("form");
+          const button = document.querySelector("#calculate-btn");
+          const firstInput = document.querySelector("#input_1");
+          const secondInput = document.querySelector("#input_2");
+          const select = document.querySelector(".multi-sign");
+
+          form.addEventListener("input", () => {
+            if (firstInput.value && secondInput.value) {
+              model.setDisabled(false);
+              model.setValues(
+                firstInput.value,
+                secondInput.value,
+                select.value
+              );
+            } else {
+              model.setDisabled(true);
+            }
+            model.viewUpdate(0);
+          });
+
+          button.addEventListener("click", (e) => {
+            e.preventDefault();
+            model.calculate(0);
+          });
+        },
+      };
+
+      model.viewUpdate(0);
+      controller.addListeners();
     </script>
   </body>
 </html>
