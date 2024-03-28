@@ -6,48 +6,71 @@
 
 body {
   width: auto;
-  height: 700px;
+  height: 100vh;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  /* justify-content: center; */
-  gap: 2rem;
 }
 
 .modal {
-  width: 400px;
+  display: none;
+  width: 600px;
   height: 400px;
   position: absolute;
-  display: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  gap: 3rem;
-  border: solid 2px;
+  justify-content: space-around;
+  border-radius: 10px;
+  background-color: #c0efcd;
+}
+
+.birthday-date {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+h2,
+p {
+  text-align: center;
+  color: cornflowerblue;
+}
+
+input {
+  padding-left: 10px;
+}
+
+label,
+input,
+select {
+  height: 2rem;
+  border-radius: 10px;
+  border: none;
+  background-color: aliceblue;
 }
 
 .button-send {
-  width: 100px;
+  width: 4rem;
+  height: 2rem;
+  border-radius: 10px;
+  border: none;
+  background-color: aliceblue;
 }
 
-.digital-time {
-  width: fit-content;
-  height: fit-content;
-  position: absolute;
+.count-down-block {
   display: none;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  font-size: 2rem;
-  margin-top: 10rem;
+  width: 70%;
+  height: auto;
+  position: absolute;
+  flex-direction: column;
+  justify-content: space-around;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  color: #72c8f3;
+  gap: 3rem;
 }
 
 .show {
